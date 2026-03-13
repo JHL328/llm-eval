@@ -1,0 +1,12 @@
+[submodule "third_party/lm-evaluation-harness"]
+	path = third_party/lm-evaluation-harness
+	url = https://github.com/EleutherAI/lm-evaluation-harness.git
+[submodule "third_party/qwen2.5-math"]
+	path = third_party/qwen2.5-math
+	url = https://github.com/QwenLM/Qwen2.5-Math.git
+[submodule "third_party/evalplus"]
+	path = third_party/evalplus
+	url = https://github.com/evalplus/evalplus.git
+[submodule "third_party/lighteval"]
+	path = third_party/lighteval
+	url = https://github.com/huggingface/lighteval.git
