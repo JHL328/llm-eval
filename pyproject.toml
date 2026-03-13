@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "llmeval"
+version = "0.1.0"
+description = "Clean LLM evaluation framework for SLURM clusters"
+requires-python = ">=3.10"
+
+# Core framework dependencies — install in the primary `llmeval` conda env.
+# Third-party submodules (lm-evaluation-harness, evalplus, qwen2.5-math) are
+# installed separately via `pip install -e third_party/<name>` as documented
+# in README.md.
+dependencies = [
+    "pyyaml>=6.0",
+    "jinja2>=3.1",
+    "datasets>=2.0",
+    "tenacity>=8.0",
+]
+
+[project.optional-dependencies]
+# Primary env (`llmeval`): inference + math + knowledge + harness benchmarks
+# Setup: see README.md §Environment Setup → llmeval
+inference = [
+    "vllm==0.6.6.post1",
+    "transformers>=4.40",
+    "flash-attn",
+]
+
+# Code execution env (`llmeval-code`): isolated sandbox for HumanEval/MBPP
+# Setup: see README.md §Environment Setup → llmeval-code
+code = [
+    "vllm==0.6.6.post1",
+    "transformers>=4.40",
+    # evalplus installed via: pip install -e third_party/evalplus
+]
+
+# Dev / testing (no GPU needed)
+dev = [
+    "pytest>=7.0",
+    "pytest-cov",
+]
+
+[project.scripts]
+llmeval = "llmeval.interfaces.cli.submit:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,413 @@
+# Task configuration
+# Each task defines sampling parameters, SLURM resource overrides, and dataset info.
+# SLURM fields not listed here fall back to cluster.yaml defaults.
+#
+# Fields:
+#   sampling:
+#     temperature    — generation temperature
+#     top_p          — nucleus sampling threshold
+#     n_sampling     — number of samples per problem
+#     max_tokens     — max new tokens per generation
+#   k_list           — values of k for pass@k reporting (multi-sample tasks only)
+#   num_shots        — number of few-shot examples in prompt
+#   prompt_type      — prompt format identifier (cot, flan_cot, default, ...)
+#   slurm:           — per-task overrides for cluster.yaml slurm defaults
+#     gpus, mem, time, cpus_per_task
+#   dataset:
+#     source         — "hf" (HuggingFace datasets) or "lm_harness" (lm-evaluation-harness)
+#     name           — HuggingFace dataset id
+#     subset         — HuggingFace dataset subset/config name (if applicable)
+#     split          — dataset split to use
+#     task_name      — lm_eval task name (for lm_harness source only)
+
+# ---------------------------------------------------------------------------
+# Math benchmarks
+# ---------------------------------------------------------------------------
+
+gsm8k:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 16
+    max_tokens: 4096
+  k_list: [1, 2, 4, 8, 16]
+  num_shots: 8
+  prompt_type: cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: openai/gsm8k
+    subset: main
+    split: test
+
+math500:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 64
+    max_tokens: 4096
+  k_list: [1, 2, 4, 8, 16, 32, 64]
+  num_shots: 4
+  prompt_type: cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: HuggingFaceH4/MATH-500
+    split: test
+
+aime24:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 16
+    max_tokens: 32768
+  k_list: [1, 2, 4, 8, 16]
+  num_shots: 0
+  prompt_type: cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: Maxwell-Jia/AIME_1983_2024
+    split: test
+
+aime25:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 16
+    max_tokens: 32768
+  k_list: [1, 2, 4, 8, 16]
+  num_shots: 0
+  prompt_type: cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: Maxwell-Jia/AIME_2025
+    split: test
+
+# ---------------------------------------------------------------------------
+# Knowledge benchmarks  (pass@1 only — greedy decoding)
+# ---------------------------------------------------------------------------
+
+mmlu:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 4096
+  k_list: [1]
+  num_shots: 5
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: cais/mmlu
+    subset: all
+    split: test
+
+mmlu_pro:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 4096
+  k_list: [1]
+  num_shots: 5
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: TIGER-Lab/MMLU-Pro
+    split: test
+
+mmlu_flan:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 4096
+  k_list: [1]
+  num_shots: 5
+  prompt_type: flan_cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: cais/mmlu
+    subset: all
+    split: test
+
+bbh:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 4096
+  k_list: [1]
+  num_shots: 3
+  prompt_type: cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: lukaemon/bbh
+    split: test
+
+gpqa:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 16
+    max_tokens: 32768
+  k_list: [1, 2, 4, 8, 16]
+  num_shots: 0
+  prompt_type: cot
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: Idavidrein/gpqa
+    subset: gpqa_diamond
+    split: train
+
+ifeval:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 4096
+  k_list: [1]
+  num_shots: 0
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: ifeval
+
+# ---------------------------------------------------------------------------
+# Code benchmarks
+# ---------------------------------------------------------------------------
+
+humaneval:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 16
+    max_tokens: 4096
+  k_list: [1, 2, 4, 8, 16]
+  num_shots: 0
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: evalplus/humanevalplus
+    split: test
+
+mbpp:
+  sampling:
+    temperature: 0.6
+    top_p: 0.95
+    n_sampling: 16
+    max_tokens: 4096
+  k_list: [1, 2, 4, 8, 16]
+  num_shots: 3
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "12:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: hf
+    name: evalplus/mbppplus
+    split: test
+
+# ---------------------------------------------------------------------------
+# Likelihood benchmarks  (evaluated via lm-evaluation-harness)
+# num_shots matches lm-eval defaults used in RL-eval/evaluate_likelihood.py
+# ---------------------------------------------------------------------------
+
+arc_easy:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 1
+  k_list: [1]
+  num_shots: 0
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: arc_easy          # uses allenai/ai2_arc, subset ARC-Easy
+
+arc_challenge:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 1
+  k_list: [1]
+  num_shots: 25
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: arc_challenge      # uses allenai/ai2_arc, subset ARC-Challenge
+
+hellaswag:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 1
+  k_list: [1]
+  num_shots: 10
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: hellaswag
+
+piqa:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 1
+  k_list: [1]
+  num_shots: 0
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: piqa
+
+winogrande:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 1
+  k_list: [1]
+  num_shots: 5
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: winogrande
+
+triviaqa:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 256
+  k_list: [1]
+  num_shots: 5
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: triviaqa
+
+drop:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 256
+  k_list: [1]
+  num_shots: 0
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: drop
+
+commonsense_qa:
+  sampling:
+    temperature: 0
+    top_p: 1
+    n_sampling: 1
+    max_tokens: 1
+  k_list: [1]
+  num_shots: 0
+  prompt_type: default
+  slurm:
+    gpus: 1
+    mem: "800G"
+    time: "04:00:00"
+    cpus_per_task: 96
+  dataset:
+    source: lm_harness
+    task_name: commonsense_qa

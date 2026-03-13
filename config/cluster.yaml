@@ -1,0 +1,28 @@
+# Cluster configuration
+# Edit this file to match your cluster environment.
+# No Python code should reference hardcoded paths — all cluster-specific
+# values must come from here.
+
+# Conda environments
+envs:
+  # Primary env: math, knowledge, harness benchmarks
+  # Setup: see README.md §Environment Setup → llmeval
+  primary: /mnt/weka/home/haolong.jia/miniconda3/envs/llmeval
+  # Isolated code execution sandbox: HumanEval, MBPP
+  # Setup: see README.md §Environment Setup → llmeval-code
+  code: /mnt/weka/home/haolong.jia/miniconda3/envs/llmeval-code
+
+# SLURM defaults — individual tasks can override these in config/tasks.yaml
+slurm:
+  partition: lowprio
+  qos: lowprio
+  ntasks: 1
+  cpus_per_task: 96
+  mem: "800G"
+  default_time: "12:00:00"
+
+# Output root — all evaluation results are written here, never inside the repo
+output_root: /mnt/weka/shrd/k2m/haolong.jia/result
+
+# Path to this repo root (used to locate third_party/ submodules in job scripts)
+repo_root: /mnt/weka/home/haolong.jia/eval/llm-eval

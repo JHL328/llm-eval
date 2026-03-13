@@ -1,0 +1,58 @@
+# Model registry
+# Each entry defines one model to evaluate.
+# Fields:
+#   name  — human-readable identifier, used as output directory name
+#   path  — absolute path to the model checkpoint on the cluster
+#   type  — "sft" (instruction-tuned, apply chat template) or "base" (raw)
+#   gpus  — number of GPUs for tensor parallelism (vLLM tensor_parallel_size)
+#
+# To add a new model: append an entry below — no Python changes needed.
+# To skip a model:    comment out its entry with #
+
+# ---------------------------------------------------------------------------
+# SFT / Instruction-tuned models
+# ---------------------------------------------------------------------------
+sft:
+  - name: Qwen3-1.7B-Instruct
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen3-1.7B
+    gpus: 1
+
+  - name: Qwen3-8B-Instruct
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen3-8B
+    gpus: 1
+
+  - name: Qwen3-1.7B-Base-Chat
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen3-1.7B-Base
+    gpus: 1
+
+  - name: Qwen2.5-1.5B-Base-Chat
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen2.5-1.5B
+    gpus: 1
+
+  - name: Qwen2.5-1.5B-Instruct
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen2.5-1.5B-Instruct
+    gpus: 1
+
+  - name: Qwen3-0.6B
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/qwen3_0p6b
+    gpus: 1
+
+  - name: mobilellm_r1_5_950m
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/mobilellm_r1_5_950m
+    gpus: 1
+
+  - name: mobilellm_r1_950m
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/mobilellm_r1_950m
+    gpus: 1
+
+  - name: gemma-3-1b
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/gemma-3-1b-it
+    gpus: 1
+
+# ---------------------------------------------------------------------------
+# Base models
+# ---------------------------------------------------------------------------
+base:
+  - name: bbq_4b_0250000
+    path: /mnt/weka/shrd/k2m/mikhail.yurochkin/bbq_checkpoints/4b/checkpoint_0250000
+    gpus: 1
