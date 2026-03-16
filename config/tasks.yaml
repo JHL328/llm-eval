@@ -39,10 +39,8 @@ gsm8k:
     time: "12:00:00"
     cpus_per_task: 96
   dataset:
-    source: hf
-    name: openai/gsm8k
-    subset: main
-    split: test
+    source: local
+    path: data/math/gsm8k_test.jsonl
 
 math500:
   sampling:
@@ -120,10 +118,8 @@ mmlu:
     time: "12:00:00"
     cpus_per_task: 96
   dataset:
-    source: hf
-    name: cais/mmlu
-    subset: all
-    split: test
+    source: local
+    path: data/knowledge/mmlu/mmlu_prompts.json
 
 mmlu_pro:
   sampling:
@@ -159,10 +155,8 @@ mmlu_flan:
     time: "12:00:00"
     cpus_per_task: 96
   dataset:
-    source: hf
-    name: cais/mmlu
-    subset: all
-    split: test
+    source: local
+    path: data/knowledge/mmlu/mmlu_cot_prompts.json
 
 bbh:
   sampling:
@@ -179,9 +173,8 @@ bbh:
     time: "12:00:00"
     cpus_per_task: 96
   dataset:
-    source: hf
-    name: lukaemon/bbh
-    split: test
+    source: local
+    path: data/knowledge/bbh/bbh_cot_prompts.json  # category-aware CoT prompts per subtask
 
 gpqa:
   sampling:
@@ -198,10 +191,8 @@ gpqa:
     time: "12:00:00"
     cpus_per_task: 96
   dataset:
-    source: hf
-    name: Idavidrein/gpqa
-    subset: gpqa_diamond
-    split: train
+    source: local
+    path: data/knowledge/gpqa/gpqa_diamond_test.jsonl
 
 ifeval:
   sampling:

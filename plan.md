@@ -235,6 +235,20 @@ llm-eval/
 │   ├── models.yaml                        ✅
 │   └── tasks.yaml                         ✅
 │
+├── data/                                  ✅  ← local benchmark datasets (committed to git)
+│   ├── math/
+│   │   └── gsm8k_test.jsonl               ✅ (744KB, copied from RL-eval)
+│   ├── knowledge/
+│   │   ├── bbh/
+│   │   │   └── bbh_cot_prompts.json       ✅ (74KB, category-aware CoT prompts)
+│   │   ├── mmlu/
+│   │   │   ├── mmlu_prompts.json          ✅ (206KB)
+│   │   │   └── mmlu_cot_prompts.json      ✅ (214KB, FLAN CoT prompts)
+│   │   └── gpqa/
+│   │       └── gpqa_diamond_test.jsonl    ✅ (151KB)
+│   ├── code/                              (empty — HumanEval/MBPP loaded via evalplus)
+│   └── likelihood/                        (empty — loaded via lm-harness)
+│
 ├── third_party/
 │   ├── lm-evaluation-harness              ✅ (submodule)
 │   ├── qwen2.5-math                       ✅ (submodule)
@@ -249,6 +263,19 @@ llm-eval/
         ├── infrastructure/
         └── interfaces/
 ```
+
+> **Data loading strategy per task:**
+> | Task | Source |
+> |---|---|
+> | GSM8K | `data/math/gsm8k_test.jsonl` (local) |
+> | MATH500, AIME | HuggingFace (no local copy) |
+> | GPQA | `data/knowledge/gpqa/gpqa_diamond_test.jsonl` (local) |
+> | MMLU | `data/knowledge/mmlu/mmlu_prompts.json` (local) |
+> | MMLU-FLAN | `data/knowledge/mmlu/mmlu_cot_prompts.json` (local) |
+> | MMLU-Pro | HuggingFace (56MB file excluded from git) |
+> | BBH | `data/knowledge/bbh/bbh_cot_prompts.json` (local) |
+> | HumanEval, MBPP | evalplus submodule |
+> | Likelihood tasks | lm-evaluation-harness submodule |
 
 ---
 

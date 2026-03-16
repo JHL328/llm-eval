@@ -25,9 +25,11 @@ outputs/
 # SLURM generated scripts (auto-generated at runtime)
 slurm_scripts/
 
-# Large data files
+# Large data files — excluded by default
 *.jsonl
 *.json
+# But allow everything under data/ (benchmark datasets committed to repo)
+!data/**
 !config/*.yaml
 
 # Jupyter
