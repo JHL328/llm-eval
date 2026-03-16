@@ -178,20 +178,94 @@ Simple `squeue` polling (from `evaluate_gsm8k.py` pattern) — no lock files, no
 
 ---
 
+## Learnings from xllm (reference repo at `../xllm/`)
+
+The `xllm` repo implements 33+ benchmarks with a different engine (single-process inference,
+no SLURM, no vLLM). We don't adopt its engine, but the following benchmark-specific details
+inform our implementation:
+
+### Code benchmarks (`benchmarks/code/`)
+- **Execution isolation**: Use multiprocess-based timeout + `reliability_guard()` (disable
+  `os.fork`, `os.kill`, resource limits). Do NOT use docker. This is sufficient for HumanEval/MBPP.
+  Our `code_executor.py` should implement this pattern on top of evalplus test suites.
+- **evalplus advantage**: evalplus provides extended test suites (HumanEval+ / MBPP+) which
+  are more robust than xllm's original test cases — keep using evalplus.
+- **HumanEval prompt**: `prompt` (function signature + docstring) + model prediction.
+  Prediction must be indented (4 spaces). Full executable = `prompt + prediction`.
+- **MBPP prompt format** (adopt from xllm):
+  ```
+  You are an expert Python programmer, and here is your task: {context}
+  Your code should pass these tests:
+
+  {tests}
+  [BEGIN]
+  ```
+  Stop generation at `[DONE]` token.
+- **Code sampling temperature**: xllm uses `temperature=1.0` for pass@k code tasks.
+  We use `temperature=0.6` (from RL-eval, consistent with math tasks). Either is acceptable;
+  0.6 is kept for consistency.
+- **Pass@k calculation**: xllm uses exact "did any of k generations pass" (binary).
+  We use `evalplus.eval.estimate_pass_at_k` (combinatorial estimator) — more robust for
+  sparse k values and the standard in literature.
+
+### BBH (`benchmarks/knowledge/bbh.py`)
+- Few-shot examples should be **category-aware**: select from the same BBH subtask category.
+  Each of the 23 subtasks has its own CoT prompt examples (from `bbh_cot_prompts.json`).
+  Load category-specific examples, not a shared pool.
+
+### MMLU-Pro (`benchmarks/knowledge/mmlu_pro.py`)
+- Few-shot examples are also **category-aware**: select from the same subject category.
+
+### Max tokens
+- xllm uses very short max tokens (HumanEval: 512, MBPP: 256, BBH: 32).
+- We keep **max_tokens=4096** for all tasks to allow full CoT reasoning chains.
+
+---
+
+## Current File Structure
+
+```
+llm-eval/
+├── pyproject.toml                         ✅
+├── .gitignore                             ✅
+├── plan.md                                ✅
+│
+├── config/
+│   ├── cluster.yaml                       ✅
+│   ├── models.yaml                        ✅
+│   └── tasks.yaml                         ✅
+│
+├── third_party/
+│   ├── lm-evaluation-harness              ✅ (submodule)
+│   ├── qwen2.5-math                       ✅ (submodule)
+│   ├── evalplus                           ✅ (submodule)
+│   └── lighteval                          ✅ (submodule)
+│
+└── src/                                   (Phase 2–5, not yet created)
+    └── llmeval/
+        ├── domain/
+        ├── application/
+        ├── benchmarks/
+        ├── infrastructure/
+        └── interfaces/
+```
+
+---
+
 ## Implementation Progress
 
 ### Phase 0 — Repo Init & Submodules
 - [x] `mkdir llm-eval && git init && git branch -m main`
-- [ ] `gh repo create llm-eval --private`
-- [ ] Add 4 submodules under `third_party/`
+- [x] `gh repo create llm-eval --private` (created manually via GitHub UI)
+- [x] Add 4 submodules under `third_party/`
 - [x] `plan.md` added to project root
 
 ### Phase 1 — Scaffold
-- [ ] `pyproject.toml`
-- [ ] `.gitignore`
-- [ ] `config/cluster.yaml`
-- [ ] `config/models.yaml`
-- [ ] `config/tasks.yaml`
+- [x] `pyproject.toml`
+- [x] `.gitignore`
+- [x] `config/cluster.yaml`
+- [x] `config/models.yaml`
+- [x] `config/tasks.yaml`
 
 ### Phase 2 — Domain Layer
 - [ ] `src/llmeval/domain/sampling_config.py`
