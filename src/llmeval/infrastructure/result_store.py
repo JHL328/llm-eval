@@ -52,10 +52,15 @@ class ResultStore:
             return EvalResult.from_dict(json.load(f))
 
     def write_result(self, result: EvalResult, task_name: str) -> None:
+        """Write result atomically using a temp file + os.replace (POSIX atomic)."""
         path = self.result_path(task_name, result.model_name)
         path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "w") as f:
+        tmp = path.with_suffix(".tmp")
+        with open(tmp, "w") as f:
             json.dump(result.to_dict(), f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
 
     # ------------------------------------------------------------------
     # Aggregated passk.json  (one file per task, all models)
@@ -85,6 +90,8 @@ class ResultStore:
             f.seek(0)
             f.truncate()
             json.dump(all_results, f, indent=2)
+            f.flush()
+            os.fsync(f.fileno())
             fcntl.flock(f, fcntl.LOCK_UN)
 
     def read_passk(self, task_name: str) -> Dict[str, Any]:

@@ -42,8 +42,8 @@ class JobSubmitter:
         Returns:
             Rendered script as a string.
         """
-        # Merge cluster defaults with per-task overrides from tasks.yaml
-        task_slurm = getattr(job.benchmark, "_slurm_overrides", {})
+        # Merge cluster defaults with per-task overrides from benchmark.slurm_overrides
+        task_slurm = job.benchmark.slurm_overrides
         gpus      = task_slurm.get("gpus",          job.model.gpus)
         mem       = task_slurm.get("mem",            self.cluster_cfg.get("mem", "800G"))
         time      = task_slurm.get("time",           self.cluster_cfg.get("default_time", "12:00:00"))
@@ -96,9 +96,18 @@ class JobSubmitter:
             ["sbatch", script_path],
             capture_output=True,
             text=True,
-            check=True,
         )
-        # sbatch outputs: "Submitted batch job <id>"
-        slurm_job_id = result.stdout.strip().split()[-1]
-        job.mark_submitted(slurm_job_id)
-        return slurm_job_id
+        if result.returncode != 0:
+            raise RuntimeError(
+                f"sbatch failed for {job.model.name}/{job.benchmark.name}:\n"
+                f"{result.stderr.strip()}"
+            )
+
+        # sbatch stdout: "Submitted batch job <id>"
+        token = result.stdout.strip().split()[-1]
+        if not token.isdigit():
+            raise RuntimeError(
+                f"Unexpected sbatch output (could not parse job ID): {result.stdout.strip()!r}"
+            )
+        job.mark_submitted(token)
+        return token

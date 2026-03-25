@@ -1,5 +1,6 @@
 """Simple squeue-based SLURM job monitor (evaluate_gsm8k.py pattern)."""
 
+import os
 import subprocess
 import time
 from typing import List
@@ -60,7 +61,7 @@ def wait_for_jobs(jobs: List[EvalJob], poll_interval: int = _POLL_INTERVAL) -> N
             finished_ids = [jid for jid in active_ids if jid not in running]
             for job in pending:
                 if job.slurm_job_id in finished_ids:
-                    if os.path.exists(job.result_path):
+                    if os.path.exists(job.result_path):  # noqa: PTH110
                         job.mark_completed()
                     else:
                         job.mark_failed()

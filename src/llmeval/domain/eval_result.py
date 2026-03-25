@@ -30,6 +30,10 @@ class EvalResult:
             raise ValueError(f"n_total must be >= 0, got {self.n_total}")
         if self.n_correct < 0:
             raise ValueError(f"n_correct must be >= 0, got {self.n_correct}")
+        if self.n_correct > self.n_total:
+            raise ValueError(
+                f"n_correct ({self.n_correct}) must be <= n_total ({self.n_total})"
+            )
 
     @property
     def accuracy(self) -> float:

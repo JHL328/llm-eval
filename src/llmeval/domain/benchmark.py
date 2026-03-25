@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 from llmeval.domain.sampling_config import SamplingConfig
@@ -55,6 +55,8 @@ class Benchmark:
         dataset:         Where to load evaluation data from.
         num_shots:       Number of few-shot examples to prepend.
         prompt_type:     Prompt format (cot, flan_cot, default, ...).
+        slurm_overrides: Per-task SLURM overrides (gpus, mem, time, cpus_per_task).
+                         Merged on top of cluster.yaml defaults at job submission time.
     """
 
     name: str
@@ -63,6 +65,7 @@ class Benchmark:
     dataset: DatasetConfig
     num_shots: int = 0
     prompt_type: str = "default"
+    slurm_overrides: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if not self.name:
@@ -72,8 +75,8 @@ class Benchmark:
 
     @property
     def is_pass_at_k(self) -> bool:
-        """True when multiple samples are drawn and pass@k is computed."""
-        return self.sampling_config.n_sampling > 1
+        """True when k_list has more than one value (multiple pass@k reported)."""
+        return len(self.sampling_config.k_list) > 1
 
     @classmethod
     def from_dict(cls, name: str, category: BenchmarkCategory, d: dict) -> "Benchmark":
@@ -89,4 +92,5 @@ class Benchmark:
             dataset=DatasetConfig.from_dict(d["dataset"]),
             num_shots=d.get("num_shots", 0),
             prompt_type=d.get("prompt_type", "default"),
+            slurm_overrides=d.get("slurm", {}),
         )

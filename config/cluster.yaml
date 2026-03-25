@@ -23,6 +23,4 @@ slurm:
 
 # Output root — all evaluation results are written here, never inside the repo
 output_root: /mnt/weka/shrd/k2m/haolong.jia/result
-
-# Path to this repo root (used to locate third_party/ submodules in job scripts)
-repo_root: /mnt/weka/home/haolong.jia/eval/llm-eval
+# Note: repo_root is derived from __file__ in ConfigLoader — not stored here.
