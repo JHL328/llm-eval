@@ -1,0 +1,23 @@
+#!/bin/bash
+#SBATCH --job-name={{ job_name }}
+#SBATCH --output={{ output_dir }}/slurm.out
+#SBATCH --error={{ output_dir }}/slurm.err
+#SBATCH --gres=gpu:{{ gpus }}
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task={{ cpus_per_task }}
+#SBATCH --time={{ time }}
+#SBATCH --partition={{ partition }}
+#SBATCH --mem={{ mem }}
+{% if account %}#SBATCH --account={{ account }}{% endif %}
+{% if qos %}#SBATCH --qos={{ qos }}{% endif %}
+
+set -euo pipefail
+
+# Activate conda environment
+source {{ conda_env_path }}/bin/activate {{ conda_env_path }}
+
+export TRITON_CACHE_DIR="/tmp/triton-cache-{{ job_name }}"
+
+cd {{ repo_root }}
+
+{{ eval_command }}

@@ -255,13 +255,21 @@ llm-eval/
 │   ├── evalplus                           ✅ (submodule)
 │   └── lighteval                          ✅ (submodule)
 │
-└── src/                                   (Phase 2–5, not yet created)
+└── src/
     └── llmeval/
-        ├── domain/
-        ├── application/
-        ├── benchmarks/
-        ├── infrastructure/
-        └── interfaces/
+        ├── domain/                        ✅ (Phase 2 complete)
+        │   ├── sampling_config.py         ✅
+        │   ├── model.py                   ✅
+        │   ├── benchmark.py               ✅
+        │   ├── eval_job.py                ✅
+        │   └── eval_result.py             ✅
+        ├── infrastructure/                (Phase 3 — in progress)
+        │   ├── slurm/
+        │   │   └── templates/
+        │   └── vllm/
+        ├── benchmarks/                    (Phase 4)
+        ├── application/                   (Phase 5)
+        └── interfaces/                    (Phase 5)
 ```
 
 > **Data loading strategy per task:**
@@ -295,19 +303,19 @@ llm-eval/
 - [x] `config/tasks.yaml`
 
 ### Phase 2 — Domain Layer
-- [ ] `src/llmeval/domain/sampling_config.py`
-- [ ] `src/llmeval/domain/model.py`
-- [ ] `src/llmeval/domain/benchmark.py`
-- [ ] `src/llmeval/domain/eval_job.py`
-- [ ] `src/llmeval/domain/eval_result.py`
+- [x] `src/llmeval/domain/sampling_config.py`
+- [x] `src/llmeval/domain/model.py`
+- [x] `src/llmeval/domain/benchmark.py`
+- [x] `src/llmeval/domain/eval_job.py`
+- [x] `src/llmeval/domain/eval_result.py`
 
 ### Phase 3 — Infrastructure
-- [ ] `src/llmeval/infrastructure/config_loader.py`
-- [ ] `src/llmeval/infrastructure/result_store.py`
-- [ ] `src/llmeval/infrastructure/slurm/templates/slurm_job.sh.j2`
-- [ ] `src/llmeval/infrastructure/slurm/job_submitter.py`
-- [ ] `src/llmeval/infrastructure/slurm/job_monitor.py`
-- [ ] `src/llmeval/infrastructure/vllm/inference_runner.py`
+- [x] `src/llmeval/infrastructure/config_loader.py`
+- [x] `src/llmeval/infrastructure/result_store.py`
+- [x] `src/llmeval/infrastructure/slurm/templates/slurm_job.sh.j2`
+- [x] `src/llmeval/infrastructure/slurm/job_submitter.py`
+- [x] `src/llmeval/infrastructure/slurm/job_monitor.py`
+- [x] `src/llmeval/infrastructure/vllm/inference_runner.py`
 
 ### Phase 4 — Benchmarks
 - [ ] `src/llmeval/benchmarks/base.py`
