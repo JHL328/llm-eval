@@ -31,6 +31,10 @@ HUMANEVAL_STOP_TOKENS = [
 class HumanEvalBenchmark(BaseBenchmark):
     """HumanEval+ — 0-shot completion, pass@k."""
 
+    @property
+    def stop_tokens(self) -> List[str]:
+        return HUMANEVAL_STOP_TOKENS
+
     def load_dataset(self) -> List[Dict[str, Any]]:
         problems, expected_output = get_problems_and_groundtruth("humaneval")
         # Store expected_output on instance for check_answer

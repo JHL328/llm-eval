@@ -146,7 +146,7 @@ mmlu_flan:
     n_sampling: 1
     max_tokens: 4096
   k_list: [1]
-  num_shots: 5
+  num_shots: 4
   prompt_type: flan_cot
   slurm:
     gpus: 1
@@ -182,7 +182,7 @@ gpqa:
     n_sampling: 16
     max_tokens: 32768
   k_list: [1, 2, 4, 8, 16]
-  num_shots: 0
+  num_shots: 5
   prompt_type: cot
   slurm:
     gpus: 1

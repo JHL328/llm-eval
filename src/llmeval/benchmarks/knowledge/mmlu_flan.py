@@ -13,7 +13,7 @@ Prompt format (from evaluate_mmlu_flan_cot_fewshot.py):
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from llmeval.benchmarks.base import BaseBenchmark
 from llmeval.benchmarks.knowledge.answer_extractor import extract_abcd
@@ -84,7 +84,7 @@ class MMLUFlanBenchmark(BaseBenchmark):
         model: Model,
         predictions: List[List[str]],
         examples: List[Dict[str, Any]],
-        per_category: Dict[str, float] = None,
+        per_category: Optional[Dict[str, float]] = None,
     ) -> EvalResult:
         subject_correct: Dict[str, int] = {}
         subject_total: Dict[str, int] = {}

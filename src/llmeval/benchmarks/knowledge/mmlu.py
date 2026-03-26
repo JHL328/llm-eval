@@ -9,7 +9,7 @@ Ground truth     : example['answer'] int 0-3 → "(A)"/"(B)"/"(C)"/"(D)"
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from llmeval.benchmarks.base import BaseBenchmark
 from llmeval.benchmarks.knowledge.answer_extractor import extract_abcd
@@ -89,7 +89,7 @@ class MMLUBenchmark(BaseBenchmark):
         model: Model,
         predictions: List[List[str]],
         examples: List[Dict[str, Any]],
-        per_category: Dict[str, float] = None,
+        per_category: Optional[Dict[str, float]] = None,
     ) -> EvalResult:
         """Override to add per-subject accuracy to per_category."""
         subject_correct: Dict[str, int] = {}

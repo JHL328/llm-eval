@@ -51,7 +51,7 @@ class GSM8KBenchmark(BaseBenchmark):
     """GSM8K test set — 8-shot CoT, pass@k."""
 
     def load_dataset(self) -> List[Dict[str, Any]]:
-        path = self._resolve_local_path(self.benchmark.dataset.path)
+        path = self._resolve_local_path(self.benchmark.dataset.name)
         examples = []
         with open(path) as f:
             for line in f:
@@ -64,8 +64,7 @@ class GSM8KBenchmark(BaseBenchmark):
         return _FEWSHOT_PREFIX + f"Q: {example['question']}\nA:"
 
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
-        # Ground truth is after "####" in the answer field
-        gold_raw = example["answer"].split("####")[-1].strip()
-        gold = extract_answer(gold_raw)
+        # Ground truth is after "####" — already a clean number string
+        gold = example["answer"].split("####")[-1].replace(",", "").strip()
         pred = extract_answer(prediction)
         return compare_math_answers(gold, pred)

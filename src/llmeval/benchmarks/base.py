@@ -2,11 +2,21 @@
 
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional
 
 from llmeval.domain.benchmark import Benchmark
 from llmeval.domain.eval_result import EvalResult
 from llmeval.domain.model import Model
+
+
+def _pass_at_k(n: int, c: int, k: int) -> float:
+    """Unbiased combinatorial estimator: 1 - C(n-c, k) / C(n, k)."""
+    if n - c < k:
+        return 1.0
+    prod = 1.0
+    for i in range(k):
+        prod *= (n - c - i) / (n - i)
+    return 1.0 - prod
 
 
 class BaseBenchmark(ABC):
@@ -67,12 +77,21 @@ class BaseBenchmark(ABC):
     # Shared helpers
     # ------------------------------------------------------------------
 
+    @property
+    def stop_tokens(self) -> List[str]:
+        """Stop sequences for the inference runner.
+
+        Subclasses override this to provide task-specific stop sequences.
+        Falls back to sampling_config.stop (empty for most tasks).
+        """
+        return list(self.benchmark.sampling_config.stop)
+
     def build_result(
         self,
         model: Model,
         predictions: List[List[str]],
         examples: List[Dict[str, Any]],
-        per_category: Dict[str, float] = None,
+        per_category: Optional[Dict[str, float]] = None,
     ) -> EvalResult:
         """Aggregate predictions into an EvalResult.
 
@@ -116,30 +135,17 @@ class BaseBenchmark(ABC):
         predictions: List[List[str]],
         examples: List[Dict[str, Any]],
     ) -> Dict[str, float]:
-        """Compute pass@k using evalplus's combinatorial estimator."""
-        try:
-            from evalplus.eval import estimate_pass_at_k
-        except ImportError as exc:
-            raise ImportError(
-                "evalplus is required for pass@k computation. "
-                "Install with: pip install -e third_party/evalplus"
-            ) from exc
-
+        """Compute pass@k using the unbiased combinatorial estimator."""
         n_samples = self.benchmark.sampling_config.n_sampling
         correct_counts = [
             sum(self.check_answer(pred, ex) for pred in preds)
             for preds, ex in zip(predictions, examples)
         ]
-        total = len(examples)
 
         results: Dict[str, float] = {}
         for k in self.benchmark.sampling_config.k_list:
-            pass_at_k = estimate_pass_at_k(
-                [n_samples] * total,
-                correct_counts,
-                k,
-            ).mean()
-            results[f"pass@{k}"] = float(pass_at_k)
+            scores = [_pass_at_k(n_samples, c, k) for c in correct_counts]
+            results[f"pass@{k}"] = sum(scores) / len(scores) if scores else 0.0
         return results
 
     def _resolve_local_path(self, relative: str) -> Path:

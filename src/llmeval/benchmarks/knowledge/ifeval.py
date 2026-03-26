@@ -39,7 +39,6 @@ class IFEvalBenchmark(BaseBenchmark):
 
     def lm_eval_args(self, model_path: str, output_dir: str, model_type: str = "base") -> str:
         """Return the lm_eval CLI invocation string for this benchmark."""
-        lm_eval_path = self.repo_root / "third_party" / "lm-evaluation-harness"
         args = (
             f"lm_eval --model vllm "
             f"--model_args pretrained={model_path},tensor_parallel_size=1,"
@@ -76,7 +75,7 @@ class IFEvalBenchmark(BaseBenchmark):
             if k in task_results
         }
         accuracy = metrics.get("prompt_level_strict_acc", 0.0)
-        n_total = int(task_results.get("alias", 0)) or len(data.get("samples", {}).get(self.LM_EVAL_TASK, []))
+        n_total = len(data.get("samples", {}).get(self.LM_EVAL_TASK, []))
 
         return EvalResult(
             model_name=model.name,

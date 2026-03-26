@@ -98,6 +98,10 @@ _FEWSHOT_PREFIX = "".join(
 class MBPPBenchmark(BaseBenchmark):
     """MBPP+ — 3-shot [BEGIN]/[DONE] format, pass@k."""
 
+    @property
+    def stop_tokens(self) -> List[str]:
+        return MBPP_STOP_TOKENS
+
     def load_dataset(self) -> List[Dict[str, Any]]:
         problems, expected_output = get_problems_and_groundtruth("mbpp")
         self._expected_output = expected_output
@@ -107,10 +111,14 @@ class MBPPBenchmark(BaseBenchmark):
         return [dict(p) for tid, p in problems.items() if tid not in skip]
 
     def build_prompt(self, example: Dict[str, Any]) -> str:
-        description = example["prompt"].strip()  # evalplus uses "prompt" = description text
-        # Use the first few test assertions as the visible tests in the prompt
-        test_lines = example.get("test_list", [])
-        tests = "\n".join(test_lines[:3])  # show at most 3 tests in the prompt
+        # MBPP+ embeds one assert into the prompt docstring and deletes test_list.
+        # prompt format: '"""\n{description}\n{assert_line}\n"""\n'
+        raw = example["prompt"].strip().strip('"""').strip()
+        lines = raw.splitlines()
+        desc_lines = [l for l in lines if not l.strip().startswith("assert")]
+        assert_lines = [l.strip() for l in lines if l.strip().startswith("assert")]
+        description = " ".join(l.strip() for l in desc_lines).strip()
+        tests = "\n".join(assert_lines[:3])
         question = _PROMPT_TEMPLATE.format(description=description, tests=tests)
         return _FEWSHOT_PREFIX + question
 

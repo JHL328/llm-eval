@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 # Ensure third_party/evalplus is importable
-_EVALPLUS = Path(__file__).parents[5] / "third_party" / "evalplus"
+_EVALPLUS = Path(__file__).parents[4] / "third_party" / "evalplus"
 if str(_EVALPLUS) not in sys.path and _EVALPLUS.is_dir():
     sys.path.insert(0, str(_EVALPLUS))
 

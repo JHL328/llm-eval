@@ -123,7 +123,7 @@ class GPQABenchmark(BaseBenchmark):
     """GPQA Diamond — 5-shot CoT, pass@k."""
 
     def load_dataset(self) -> List[Dict[str, Any]]:
-        path = self._resolve_local_path(self.benchmark.dataset.path)
+        path = self._resolve_local_path(self.benchmark.dataset.name)
         examples = []
         with open(path) as f:
             for line in f:

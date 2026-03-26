@@ -12,7 +12,7 @@ Prompt format (from k2/bbh.py):
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from llmeval.benchmarks.base import BaseBenchmark
 from llmeval.benchmarks.knowledge.answer_extractor import extract_bbh
@@ -76,7 +76,7 @@ class BBHBenchmark(BaseBenchmark):
         model: Model,
         predictions: List[List[str]],
         examples: List[Dict[str, Any]],
-        per_category: Dict[str, float] = None,
+        per_category: Optional[Dict[str, float]] = None,
     ) -> EvalResult:
         task_correct: Dict[str, int] = {}
         task_total: Dict[str, int] = {}

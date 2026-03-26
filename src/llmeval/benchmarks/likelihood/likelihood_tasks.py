@@ -88,7 +88,9 @@ class LikelihoodBenchmark(BaseBenchmark):
         metric_key = _TASK_METRIC.get(task_name, "acc_norm,none")
         short_name = _METRIC_SHORT.get(metric_key, metric_key.split(",")[0])
         score = float(task_results.get(metric_key, 0.0))
-        n_total = int(task_results.get("alias", 0)) or 0
+        # lm_eval does not reliably expose dataset size in results JSON;
+        # store 0 to indicate "unknown" — downstream display handles None.
+        n_total = 0
 
         return EvalResult(
             model_name=model.name,
