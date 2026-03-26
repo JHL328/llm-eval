@@ -93,7 +93,7 @@ class SubmitEvaluationUseCase:
                     if job_id:
                         print(f"[submit] {model.name}/{task_name} → SLURM job {job_id}")
                     submitted.append(job)
-                except RuntimeError as e:
+                except (RuntimeError, OSError) as e:
                     print(f"[error] {model.name}/{task_name}: {e}")
 
         return submitted
@@ -112,12 +112,12 @@ class SubmitEvaluationUseCase:
         gpus = benchmark.slurm_overrides.get("gpus", model.gpus)
         return (
             f"python -m llmeval.interfaces.cli.run_job"
-            f" --task {benchmark.name}"
-            f" --model-path {model.path}"
-            f" --model-name {model.name}"
-            f" --model-type {model.type.value}"
-            f" --gpus {gpus}"
-            f" --output-dir {job.output_dir}"
+            f' --task {benchmark.name}'
+            f' --model-path "{model.path}"'
+            f' --model-name "{model.name}"'
+            f' --model-type {model.type.value}'
+            f' --gpus {gpus}'
+            f' --output-dir "{job.output_dir}"'
         )
 
     def _lm_harness_command(

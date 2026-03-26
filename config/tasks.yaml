@@ -60,43 +60,24 @@ math500:
     source: local
     path: data/math/math500_test.jsonl
 
-aime24:
-  sampling:
-    temperature: 0.6
-    top_p: 0.95
-    n_sampling: 16
-    max_tokens: 32768
-  k_list: [1, 2, 4, 8, 16]
-  num_shots: 0
-  prompt_type: cot
-  slurm:
-    gpus: 1
-    mem: "800G"
-    time: "12:00:00"
-    cpus_per_task: 96
-  dataset:
-    source: hf
-    name: Maxwell-Jia/AIME_1983_2024
-    split: test
-
-aime25:
-  sampling:
-    temperature: 0.6
-    top_p: 0.95
-    n_sampling: 16
-    max_tokens: 32768
-  k_list: [1, 2, 4, 8, 16]
-  num_shots: 0
-  prompt_type: cot
-  slurm:
-    gpus: 1
-    mem: "800G"
-    time: "12:00:00"
-    cpus_per_task: 96
-  dataset:
-    source: hf
-    name: Maxwell-Jia/AIME_2025
-    split: test
+# aime24 and aime25 are deferred — benchmark class not yet implemented.
+# Uncomment once src/llmeval/benchmarks/math/aime.py exists.
+#
+# aime24:
+#   sampling: {temperature: 0.6, top_p: 0.95, n_sampling: 16, max_tokens: 32768}
+#   k_list: [1, 2, 4, 8, 16]
+#   num_shots: 0
+#   prompt_type: cot
+#   slurm: {gpus: 1, mem: "800G", time: "12:00:00", cpus_per_task: 96}
+#   dataset: {source: hf, name: Maxwell-Jia/AIME_1983_2024, split: test}
+#
+# aime25:
+#   sampling: {temperature: 0.6, top_p: 0.95, n_sampling: 16, max_tokens: 32768}
+#   k_list: [1, 2, 4, 8, 16]
+#   num_shots: 0
+#   prompt_type: cot
+#   slurm: {gpus: 1, mem: "800G", time: "12:00:00", cpus_per_task: 96}
+#   dataset: {source: hf, name: Maxwell-Jia/AIME_2025, split: test}
 
 # ---------------------------------------------------------------------------
 # Knowledge benchmarks  (pass@1 only — greedy decoding)

@@ -76,7 +76,9 @@ def _cmd_submit(args) -> None:
         model_type=args.model_type,
     )
 
-    if jobs and args.wait and not args.dry_run:
+    if args.wait and args.dry_run:
+        print("[warn] --wait is ignored in dry-run mode")
+    elif jobs and args.wait:
         MonitorJobsUseCase().execute(jobs)
 
 

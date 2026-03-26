@@ -52,14 +52,19 @@ def main() -> None:
     parser.add_argument("--output-dir",  required=True)
     args = parser.parse_args()
 
-    os.makedirs(args.output_dir, exist_ok=True)
     fail_flag = os.path.join(args.output_dir, "fail.flag")
 
     try:
+        os.makedirs(args.output_dir, exist_ok=True)
         _run(args)
     except Exception as e:
-        with open(fail_flag, "w") as f:
-            f.write(f"{type(e).__name__}: {e}\n\n{traceback.format_exc()}")
+        # Best-effort: write fail.flag so the monitor can detect failure
+        try:
+            os.makedirs(args.output_dir, exist_ok=True)
+            with open(fail_flag, "w") as f:
+                f.write(f"{type(e).__name__}: {e}\n\n{traceback.format_exc()}")
+        except OSError:
+            pass
         print(f"[run_job] FAILED: {e}", file=sys.stderr)
         sys.exit(1)
 
