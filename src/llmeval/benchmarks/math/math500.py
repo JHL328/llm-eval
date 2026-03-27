@@ -55,5 +55,6 @@ class Math500Benchmark(BaseBenchmark):
 
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
         gold = example["answer"].strip()
-        pred = extract_answer(prediction)
-        return compare_math_answers(gold, pred)
+        # Pass raw prediction; compare_math_answers calls math_verify.parse internally.
+        # Do NOT call extract_answer() first — str(parse_result) cannot be re-parsed.
+        return compare_math_answers(gold, prediction)

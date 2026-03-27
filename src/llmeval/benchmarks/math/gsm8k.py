@@ -66,5 +66,6 @@ class GSM8KBenchmark(BaseBenchmark):
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
         # Ground truth is after "####" — already a clean number string
         gold = example["answer"].split("####")[-1].replace(",", "").strip()
-        pred = extract_answer(prediction)
-        return compare_math_answers(gold, pred)
+        # Pass raw prediction; compare_math_answers calls math_verify.parse internally.
+        # Do NOT call extract_answer() first — str(parse_result) cannot be re-parsed.
+        return compare_math_answers(gold, prediction)

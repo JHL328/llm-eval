@@ -41,4 +41,4 @@ slurm_scripts/
 .idea/
 
 # OS
-.DS_Store
+.DS_Storeout/

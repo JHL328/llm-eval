@@ -121,7 +121,7 @@ class ConfigLoader:
         return self.cluster["output_root"]
 
     def conda_env(self, env_type: str = "primary") -> str:
-        """Return the conda env path for the given type ('primary' or 'code')."""
+        """Return the conda env path for the given type ('primary', 'code', or 'harness')."""
         return self.cluster["envs"][env_type]
 
     def resolve_dataset_path(self, relative_path: str) -> Path:

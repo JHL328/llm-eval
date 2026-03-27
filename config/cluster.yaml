@@ -5,12 +5,12 @@
 
 # Conda environments
 envs:
-  # Primary env: math, knowledge, harness benchmarks
-  # Setup: see README.md §Environment Setup → llmeval
-  primary: /mnt/weka/home/haolong.jia/miniconda3/envs/llmeval
-  # Isolated code execution sandbox: HumanEval, MBPP
-  # Setup: see README.md §Environment Setup → llmeval-code
-  code: /mnt/weka/home/haolong.jia/miniconda3/envs/llmeval-code
+  # Primary env: vLLM + math_verify — math and knowledge benchmarks
+  primary: /mnt/weka/home/haolong.jia/miniconda3/envs/qwen-eval
+  # Code env: vLLM + evalplus — HumanEval and MBPP benchmarks
+  code: /mnt/weka/home/haolong.jia/miniconda3/envs/evalplus-eval
+  # Harness env: lm-evaluation-harness — IFEval, ARC, HellaSwag, etc.
+  harness: /mnt/weka/home/haolong.jia/miniconda3/envs/harness-eval
 
 # SLURM defaults — individual tasks can override these in config/tasks.yaml
 slurm:
@@ -22,5 +22,6 @@ slurm:
   default_time: "12:00:00"
 
 # Output root — all evaluation results are written here, never inside the repo
-output_root: /mnt/weka/shrd/k2m/haolong.jia/result
+# NOTE: set to local out/ for testing; restore to production path before real runs
+output_root: /mnt/weka/home/haolong.jia/eval/llm-eval/out
 # Note: repo_root is derived from __file__ in ConfigLoader — not stored here.

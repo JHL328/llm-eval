@@ -76,12 +76,12 @@ def extract_answer(text: str) -> str:
     """
     text = text.strip()
 
-    # 1. math_verify.parse — best effort; returns None if no extractable answer
+    # 1. math_verify.parse — returns a list of candidates; take the first for display
     try:
         from math_verify import parse  # type: ignore[import]
         parsed = parse(text)
-        if parsed is not None:
-            return str(parsed)
+        if parsed:  # non-empty list
+            return str(parsed[0])
     except Exception:
         pass
 

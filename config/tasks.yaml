@@ -30,6 +30,8 @@ gsm8k:
     top_p: 0.95
     n_sampling: 16
     max_tokens: 4096
+    max_model_len: 8192
+    stop: ["</s>", "<|im_end|>"]
   k_list: [1, 2, 4, 8, 16]
   num_shots: 8
   prompt_type: cot

@@ -14,9 +14,9 @@
 set -euo pipefail
 
 # Activate conda environment
-source {{ conda_env_path }}/bin/activate {{ conda_env_path }}
+source {{ conda_root }}/bin/activate {{ conda_env_path }}
 
-export TRITON_CACHE_DIR="/tmp/triton-cache-{{ job_name }}"
+export TRITON_CACHE_DIR="/tmp/triton-cache"
 
 cd {{ repo_root }}
 

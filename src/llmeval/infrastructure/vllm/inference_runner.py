@@ -25,17 +25,22 @@ class VLLMRunner:
         tensor_parallel_size: int = 1,
         gpu_memory_utilization: float = 0.95,
         trust_remote_code: bool = True,
+        max_model_len: Optional[int] = None,
     ) -> None:
         # Deferred import — vllm is only available on GPU nodes
         from vllm import LLM, SamplingParams as VLLMSamplingParams  # noqa: F401
 
-        self._llm = LLM(
+        llm_kwargs: dict = dict(
             model=model_path,
             tensor_parallel_size=tensor_parallel_size,
             gpu_memory_utilization=gpu_memory_utilization,
             enable_prefix_caching=True,
             trust_remote_code=trust_remote_code,
         )
+        if max_model_len is not None:
+            llm_kwargs["max_model_len"] = max_model_len
+
+        self._llm = LLM(**llm_kwargs)
         self._VLLMSamplingParams = VLLMSamplingParams
 
     def generate(
@@ -81,10 +86,11 @@ class VLLMRunner:
         return self._VLLMSamplingParams(**kwargs)
 
     @classmethod
-    def from_model(cls, model, **kwargs) -> "VLLMRunner":
+    def from_model(cls, model, max_model_len: Optional[int] = None, **kwargs) -> "VLLMRunner":
         """Build directly from a Model domain object."""
         return cls(
             model_path=model.path,
             tensor_parallel_size=model.gpus,
+            max_model_len=max_model_len,
             **kwargs,
         )

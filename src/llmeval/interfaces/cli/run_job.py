@@ -96,10 +96,30 @@ def _run(args) -> None:
     prompts  = [benchmark.build_prompt(ex) for ex in examples]
     print(f"[run_job] {len(prompts)} examples loaded.")
 
+    # Apply chat template for SFT/instruct models; collect EOS tokens while at it
+    sft_stop_tokens: list = []
+    if model.type == ModelType.SFT:
+        from transformers import AutoTokenizer
+        tokenizer = AutoTokenizer.from_pretrained(model.path, trust_remote_code=True)
+        prompts = [
+            tokenizer.apply_chat_template(
+                [{"role": "user", "content": p}],
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            for p in prompts
+        ]
+        # Collect EOS / end-of-turn tokens from the tokenizer for use as stop strings
+        for tok in (tokenizer.eos_token, tokenizer.pad_token):
+            if tok and tok not in sft_stop_tokens:
+                sft_stop_tokens.append(tok)
+        print(f"[run_job] Applied chat template (model type: sft), sft stop tokens: {sft_stop_tokens}")
+
     # Build sampling config, patching in task-specific stop tokens
     sampling_cfg = benchmark_cfg.sampling_config
-    stop = benchmark.stop_tokens
-    if stop and stop != list(sampling_cfg.stop):
+    # Merge: benchmark stop tokens + SFT tokenizer stop tokens (deduplicated)
+    stop = list(dict.fromkeys(benchmark.stop_tokens + sft_stop_tokens))
+    if stop != list(sampling_cfg.stop):
         from llmeval.domain.sampling_config import SamplingConfig
         sampling_cfg = SamplingConfig(
             temperature=sampling_cfg.temperature,
@@ -111,15 +131,55 @@ def _run(args) -> None:
             k_list=sampling_cfg.k_list,
         )
 
+    max_model_len = sampling_cfg.max_model_len or (sampling_cfg.max_tokens + 4096)
+    print(
+        f"[run_job] Sampling: temperature={sampling_cfg.temperature}, "
+        f"top_p={sampling_cfg.top_p}, n_sampling={sampling_cfg.n_sampling}, "
+        f"max_tokens={sampling_cfg.max_tokens}, max_model_len={max_model_len}, "
+        f"stop={sampling_cfg.stop}"
+    )
     print(
         f"[run_job] Inference: {sampling_cfg.n_sampling} samples × "
-        f"{len(prompts)} problems (temp={sampling_cfg.temperature})"
+        f"{len(prompts)} problems"
     )
-    runner = VLLMRunner.from_model(model)
+
+    # Log first example prompt for sanity-check
+    if prompts:
+        print(f"\n[run_job] === First prompt ===\n{prompts[0]}\n")
+
+    runner = VLLMRunner.from_model(model, max_model_len=max_model_len)
     predictions = runner.generate(prompts, sampling_cfg)
+
+    # Log first example generations + extracted answers
+    if predictions:
+        print(f"\n[run_job] === First example generations ===")
+        for i, gen in enumerate(predictions[0]):
+            extracted = benchmark.extract_answer(gen)
+            print(f"[run_job] Generation [{i}]: {gen[:500]!r}")
+            print(f"[run_job] Extracted [{i}]: {extracted!r}")
+        print()
+
+    # Save generations.jsonl — one line per example
+    generations_path = os.path.join(args.output_dir, "generations.jsonl")
+    import json as _json
+    with open(generations_path, "w") as f:
+        for i, (preds, ex) in enumerate(zip(predictions, examples)):
+            f.write(_json.dumps({"idx": i, "example": ex, "generations": preds}) + "\n")
+    print(f"[run_job] Saved generations → {generations_path}")
 
     print("[run_job] Evaluating predictions...")
     result = benchmark.build_result(model=model, predictions=predictions, examples=examples)
+
+    # Save correctness.csv — rows=examples, columns=sample_0..sample_{n-1}, values=0/1
+    import csv as _csv
+    n_samples = len(predictions[0]) if predictions else 0
+    correctness_path = os.path.join(args.output_dir, "correctness.csv")
+    with open(correctness_path, "w", newline="") as f:
+        writer = _csv.writer(f)
+        writer.writerow([f"sample_{i}" for i in range(n_samples)])
+        for preds, ex in zip(predictions, examples):
+            writer.writerow([1 if benchmark.check_answer(p, ex) else 0 for p in preds])
+    print(f"[run_job] Saved correctness → {correctness_path}")
 
     # Write result.json via ResultStore (handles atomic write)
     # output_dir is  <output_root>/<task>/<model_name>  — store root is two levels up

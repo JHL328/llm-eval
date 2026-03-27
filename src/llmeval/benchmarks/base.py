@@ -74,6 +74,19 @@ class BaseBenchmark(ABC):
         """
 
     # ------------------------------------------------------------------
+    # Answer extraction for logging — override in subclasses if needed
+    # ------------------------------------------------------------------
+
+    def extract_answer(self, prediction: str) -> str:
+        """Return the extracted answer string from a raw prediction (for logging).
+
+        Uses math_verify.parse() by default (same as math answer checking).
+        MCQ/code subclasses may override to use their own extractor.
+        """
+        from llmeval.benchmarks.math.answer_extractor import extract_answer as _extract
+        return _extract(prediction)
+
+    # ------------------------------------------------------------------
     # Shared helpers
     # ------------------------------------------------------------------
 

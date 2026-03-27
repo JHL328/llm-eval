@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -23,6 +23,7 @@ class SamplingConfig:
     stop: List[str] = field(default_factory=list)
     seed: int = 42
     k_list: List[int] = field(default_factory=list)
+    max_model_len: Optional[int] = None  # vLLM context window; if None, defaults to max_tokens + 4096
 
     def __post_init__(self) -> None:
         if self.temperature < 0:
@@ -65,4 +66,5 @@ class SamplingConfig:
             stop=d.get("stop", []),
             seed=d.get("seed", 42),
             k_list=d.get("k_list", []),
+            max_model_len=d.get("max_model_len"),
         )

@@ -5,6 +5,10 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+# conda_env path is like .../miniconda3/envs/<name>  → root is 2 levels up
+def _conda_root(env_path: str) -> str:
+    return str(Path(env_path).parents[1])
+
 from jinja2 import Environment, FileSystemLoader
 
 from llmeval.domain.eval_job import EvalJob
@@ -62,6 +66,7 @@ class JobSubmitter:
             account=self.cluster_cfg.get("account", ""),
             qos=self.cluster_cfg.get("qos", ""),
             conda_env_path=self.conda_env,
+            conda_root=_conda_root(self.conda_env),
             repo_root=self.repo_root,
             eval_command=eval_command,
         )

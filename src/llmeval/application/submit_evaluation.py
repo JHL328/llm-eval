@@ -12,6 +12,9 @@ from llmeval.infrastructure.slurm.job_submitter import JobSubmitter
 
 # Tasks that run in the isolated code conda env (has evalplus installed)
 _CODE_TASKS = {"humaneval", "mbpp"}
+# Tasks that run via lm-evaluation-harness CLI (harness env)
+_HARNESS_TASKS = {"ifeval", "arc_easy", "arc_challenge", "hellaswag", "piqa",
+                  "winogrande", "triviaqa", "drop", "commonsense_qa"}
 
 
 class SubmitEvaluationUseCase:
@@ -45,6 +48,11 @@ class SubmitEvaluationUseCase:
             repo_root=repo_root,
             cluster_cfg=slurm_defaults,
             conda_env=config_loader.conda_env("code"),
+        )
+        self._submitter_harness = JobSubmitter(
+            repo_root=repo_root,
+            cluster_cfg=slurm_defaults,
+            conda_env=config_loader.conda_env("harness"),
         )
 
     def execute(
@@ -80,11 +88,12 @@ class SubmitEvaluationUseCase:
                 output_dir = os.path.join(output_root, task_name, model.name)
                 job = EvalJob(model=model, benchmark=benchmark, output_dir=output_dir)
                 eval_command = self._build_eval_command(job, benchmark, model)
-                submitter = (
-                    self._submitter_code
-                    if task_name in _CODE_TASKS
-                    else self._submitter_primary
-                )
+                if task_name in _CODE_TASKS:
+                    submitter = self._submitter_code
+                elif task_name in _HARNESS_TASKS:
+                    submitter = self._submitter_harness
+                else:
+                    submitter = self._submitter_primary
 
                 try:
                     job_id = submitter.write_and_submit(
@@ -131,8 +140,18 @@ class SubmitEvaluationUseCase:
         else:
             instance = LikelihoodBenchmark(benchmark, self.cfg.repo_root)
 
-        return instance.lm_eval_args(
+        lm_eval_cmd = instance.lm_eval_args(
             model_path=model.path,
             output_dir=job.output_dir,
             model_type=model.type.value,
         )
+        # Chain parse step: convert lm_eval's results_*.json → our result.json
+        parse_cmd = (
+            f"python -m llmeval.interfaces.cli.parse_lm_harness"
+            f' --task {benchmark.name}'
+            f' --model-name "{model.name}"'
+            f' --model-path "{model.path}"'
+            f' --model-type {model.type.value}'
+            f' --output-dir "{job.output_dir}"'
+        )
+        return f"{lm_eval_cmd} && {parse_cmd}"
