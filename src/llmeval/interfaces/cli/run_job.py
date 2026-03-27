@@ -150,14 +150,23 @@ def _run(args) -> None:
     runner = VLLMRunner.from_model(model, max_model_len=max_model_len)
     predictions = runner.generate(prompts, sampling_cfg)
 
-    # Log first example generations + extracted answers
-    if predictions:
-        print(f"\n[run_job] === First example generations ===")
+    # Log first example: all generations, parsed answers, exact match (same as RL-eval)
+    if predictions and examples:
+        ex0 = examples[0]
+        print(f"\n==== First Sample Debug Info ====")
+        print(f"Prompt:\n{prompts[0]}\n")
         for i, gen in enumerate(predictions[0]):
-            extracted = benchmark.extract_answer(gen)
-            print(f"[run_job] Generation [{i}]: {gen[:500]!r}")
-            print(f"[run_job] Extracted [{i}]: {extracted!r}")
-        print()
+            print(f"[{i+1}] {gen}\n")
+        # Ground truth: try common keys
+        gt = ex0.get("answer", ex0.get("solution", "N/A"))
+        if isinstance(gt, str) and "####" in gt:
+            gt = gt.split("####")[-1].replace(",", "").strip()
+        print(f"GT: {gt}")
+        parsed = [benchmark.extract_answer(g) for g in predictions[0]]
+        em = [benchmark.check_answer(g, ex0) for g in predictions[0]]
+        print(f"Parsed: {parsed}")
+        print(f"EM: {em}")
+        print("===============================")
 
     # Save generations.jsonl — one line per example
     generations_path = os.path.join(args.output_dir, "generations.jsonl")

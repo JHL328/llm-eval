@@ -31,7 +31,7 @@ gsm8k:
     n_sampling: 16
     max_tokens: 4096
     max_model_len: 8192
-    stop: ["</s>", "<|im_end|>"]
+    stop: ["</s>", "<|im_end|>", "\n\nQ:"]
   k_list: [1, 2, 4, 8, 16]
   num_shots: 8
   prompt_type: cot
