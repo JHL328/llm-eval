@@ -33,6 +33,14 @@ sft:
     path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen2.5-1.5B-Instruct
     gpus: 1
 
+  - name: gemma-3-1b
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/gemma-3-1b-it
+    gpus: 1
+
+# ---------------------------------------------------------------------------
+# Base models
+# ---------------------------------------------------------------------------
+base:
   - name: Qwen3-0.6B
     path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/qwen3_0p6b
     gpus: 1
@@ -45,14 +53,6 @@ sft:
     path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/mobilellm_r1_950m
     gpus: 1
 
-  - name: gemma-3-1b
-    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/gemma-3-1b-it
-    gpus: 1
-
-# ---------------------------------------------------------------------------
-# Base models
-# ---------------------------------------------------------------------------
-base:
   - name: bbq_4b_0250000
     path: /mnt/weka/shrd/k2m/mikhail.yurochkin/bbq_checkpoints/4b/checkpoint_0250000
     gpus: 1
