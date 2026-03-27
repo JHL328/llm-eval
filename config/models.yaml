@@ -41,6 +41,18 @@ sft:
 # Base models
 # ---------------------------------------------------------------------------
 base:
+  - name: Qwen2.5-3B
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen2.5-3B
+    gpus: 1
+
+  - name: Qwen3-1.7B-Base
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen3-1.7B-Base
+    gpus: 1
+
+  - name: Qwen2.5-1.5B
+    path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen2.5-1.5B
+    gpus: 1
+
   - name: Qwen3-0.6B
     path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/qwen3_0p6b
     gpus: 1

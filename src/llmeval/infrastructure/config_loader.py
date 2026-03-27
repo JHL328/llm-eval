@@ -13,6 +13,8 @@ from llmeval.domain.sampling_config import SamplingConfig
 # Maps task name prefixes/exact names to benchmark categories
 _CATEGORY_MAP: Dict[str, BenchmarkCategory] = {
     "gsm8k":         BenchmarkCategory.MATH,
+    "gsm8k_8shot_greedy": BenchmarkCategory.MATH,
+    "gsm8k_0shot":   BenchmarkCategory.MATH,
     "math500":       BenchmarkCategory.MATH,
     "aime24":        BenchmarkCategory.MATH,
     "aime25":        BenchmarkCategory.MATH,

@@ -3,13 +3,20 @@
 Dataset: data/math/math500_test.jsonl (copied from qwen2.5-math/evaluation/data/math500/)
 Columns: problem, solution, answer, subject, level, unique_id
 Ground truth: `answer` field (pre-extracted from \\boxed{} in solution).
+
+Uses qwen2.5-math grader (extract_answer + math_equal) instead of math_verify
+for more stable comparison of LaTeX expressions, fractions, symbolic answers.
 """
 
 import json
 from typing import Any, Dict, List
 
 from llmeval.benchmarks.base import BaseBenchmark
-from llmeval.benchmarks.math.answer_extractor import compare_math_answers, extract_answer
+from llmeval.benchmarks.math.qwen_math_grader import (
+    qwen_extract_answer,
+    qwen_math_equal,
+    qwen_strip_string,
+)
 
 # 4-shot examples from qwen2.5-math/evaluation/examples.py (math500 split)
 _FEWSHOT_EXAMPLES = [
@@ -53,8 +60,13 @@ class Math500Benchmark(BaseBenchmark):
     def build_prompt(self, example: Dict[str, Any]) -> str:
         return _FEWSHOT_PREFIX + f"Question: {example['problem']}\nSolution: Let's think step by step."
 
+    def extract_answer(self, prediction: str) -> str:
+        """Extract answer using qwen2.5-math style extraction."""
+        return qwen_extract_answer(prediction, data_name="math500")
+
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
-        gold = example["answer"].strip()
-        # Pass raw prediction; compare_math_answers calls math_verify.parse internally.
-        # Do NOT call extract_answer() first — str(parse_result) cannot be re-parsed.
-        return compare_math_answers(gold, prediction)
+        # Ground truth: extract from solution field (same as qwen2.5-math)
+        gold = qwen_extract_answer(example["solution"], data_name="math500")
+        # Prediction: extract answer then compare
+        pred = qwen_extract_answer(prediction, data_name="math500")
+        return qwen_math_equal(pred, gold)

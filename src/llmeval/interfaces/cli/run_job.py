@@ -19,7 +19,9 @@ from pathlib import Path
 
 # Mapping: task name → (module, class_name)
 _REGISTRY = {
-    "gsm8k":     ("llmeval.benchmarks.math.gsm8k",         "GSM8KBenchmark"),
+    "gsm8k":       ("llmeval.benchmarks.math.gsm8k",         "GSM8KBenchmark"),
+    "gsm8k_8shot_greedy": ("llmeval.benchmarks.math.gsm8k",   "GSM8KBenchmark"),
+    "gsm8k_0shot": ("llmeval.benchmarks.math.gsm8k",         "GSM8KBenchmark"),
     "math500":   ("llmeval.benchmarks.math.math500",        "Math500Benchmark"),
     "mmlu":      ("llmeval.benchmarks.knowledge.mmlu",      "MMLUBenchmark"),
     "mmlu_pro":  ("llmeval.benchmarks.knowledge.mmlu_pro",  "MMLUProBenchmark"),

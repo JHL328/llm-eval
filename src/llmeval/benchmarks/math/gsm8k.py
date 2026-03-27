@@ -43,7 +43,7 @@ _FEWSHOT_EXAMPLES = [
 ]
 
 _FEWSHOT_PREFIX = "".join(
-    f"Q: {ex['question']}\nA: {ex['answer']}\n\n" for ex in _FEWSHOT_EXAMPLES
+    f"Question: {ex['question']}\nAnswer: {ex['answer']}\n\n" for ex in _FEWSHOT_EXAMPLES
 )
 
 
@@ -61,7 +61,9 @@ class GSM8KBenchmark(BaseBenchmark):
         return examples
 
     def build_prompt(self, example: Dict[str, Any]) -> str:
-        return _FEWSHOT_PREFIX + f"Q: {example['question']}\nA:"
+        if self.benchmark.num_shots == 0:
+            return f"Question: {example['question']}\nAnswer: Let's think step by step."
+        return _FEWSHOT_PREFIX + f"Question: {example['question']}\nAnswer:"
 
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
         # Ground truth is after "####" — already a clean number string
