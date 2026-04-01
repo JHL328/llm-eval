@@ -48,7 +48,10 @@ class MMLUBenchmark(BaseBenchmark):
         """Load the pre-built few-shot prefix strings from mmlu_prompts.json."""
         path = self._resolve_local_path(self.benchmark.dataset.name)
         with open(path) as f:
-            return json.load(f)
+            raw = json.load(f)
+        # Normalize Q:/A: → Question:/Answer: to match test prompt format
+        return {k: v.replace("\nQ: ", "\nQuestion: ").replace("\nA: ", "\nAnswer: ")
+                for k, v in raw.items()}
 
     def load_dataset(self) -> List[Dict[str, Any]]:
         from datasets import load_dataset  # type: ignore[import]
@@ -75,10 +78,13 @@ class MMLUBenchmark(BaseBenchmark):
         c = example["choices"]
         return (
             fewshot
-            + f"\n\nQ: {q}\n"
+            + f"\n\nQuestion: {q}\n"
             + f"(A) {c[0]} (B) {c[1]} (C) {c[2]} (D) {c[3]}\n"
-            + "A:"
+            + "Answer:"
         )
+
+    def extract_answer(self, prediction: str) -> str:
+        return extract_abcd(prediction)
 
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
         gold = f"({_LABELS[example['answer']]})"

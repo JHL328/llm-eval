@@ -163,6 +163,8 @@ def _run(args) -> None:
         gt = ex0.get("answer", ex0.get("solution", "N/A"))
         if isinstance(gt, str) and "####" in gt:
             gt = gt.split("####")[-1].replace(",", "").strip()
+        elif isinstance(gt, int) and gt in range(4):
+            gt = f"({chr(65 + gt)})"  # 0-3 → (A)-(D)
         print(f"GT: {gt}")
         parsed = [benchmark.extract_answer(g) for g in predictions[0]]
         em = [benchmark.check_answer(g, ex0) for g in predictions[0]]

@@ -37,6 +37,10 @@ sft:
     path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/gemma-3-1b-it
     gpus: 1
 
+  - name: Qwen3-0.6B
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/qwen3_0p6b
+    gpus: 1
+
 # ---------------------------------------------------------------------------
 # Base models
 # ---------------------------------------------------------------------------
@@ -53,8 +57,8 @@ base:
     path: /mnt/weka/shrd/k2m/haolong.jia/checkpoint/Qwen2.5-1.5B
     gpus: 1
 
-  - name: Qwen3-0.6B
-    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/qwen3_0p6b
+  - name: Qwen3-0.6B-Base
+    path: /mnt/weka/shrd/k2m/junlin.chen/hf_models/qwen3_0p6b_base
     gpus: 1
 
   - name: mobilellm_r1_5_950m

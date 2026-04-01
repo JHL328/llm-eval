@@ -31,7 +31,7 @@ gsm8k:
     n_sampling: 16
     max_tokens: 4096
     max_model_len: 8192
-    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "</think>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1, 2, 4, 8, 16]
   num_shots: 8
   prompt_type: cot
@@ -51,7 +51,7 @@ gsm8k_8shot_greedy:
     n_sampling: 1
     max_tokens: 4096
     max_model_len: 8192
-    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "</think>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1]
   num_shots: 8
   prompt_type: cot
@@ -71,7 +71,7 @@ gsm8k_0shot:
     n_sampling: 1
     max_tokens: 4096
     max_model_len: 8192
-    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "</think>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1]
   num_shots: 0
   prompt_type: cot
@@ -91,7 +91,7 @@ math500:
     n_sampling: 64
     max_tokens: 4096
     max_model_len: 8192
-    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "</think>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1, 2, 4, 8, 16, 32, 64]
   num_shots: 4
   prompt_type: cot
@@ -132,7 +132,9 @@ mmlu:
     temperature: 0
     top_p: 1
     n_sampling: 1
-    max_tokens: 4096
+    max_tokens: 2048
+    max_model_len: 4096
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1]
   num_shots: 5
   prompt_type: default
@@ -150,7 +152,9 @@ mmlu_pro:
     temperature: 0
     top_p: 1
     n_sampling: 1
-    max_tokens: 4096
+    max_tokens: 2048
+    max_model_len: 4096
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1]
   num_shots: 5
   prompt_type: default

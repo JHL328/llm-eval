@@ -42,9 +42,14 @@ def extract_abcd(text: str) -> str:
 def extract_abcdj(text: str) -> str:
     """Extract A–J MCQ answer from MMLU-Pro model output.
 
-    Priority (mirrors k2/mmlu_pro.py):
-      1. "the answer is (X)" or "the answer is X"  for A–J
-      2. Exact single capital letter A–J on its own line (last such line)
+    Priority:
+      1. "the answer is (X)" or "the answer is X"
+      2. "correct answer is (X)" / "correct answer is:\nX"
+      3. "Answer: X" at start of line
+      4. "**X." or "**X)" (bold markdown option label)
+      5. Last "(X)" for A–J in text
+      6. "X. " at start of line (option-label style, last match)
+      7. Exact single capital letter A–J on its own line (last match)
 
     Returns the letter only, e.g. "A" (no parentheses — matches mmlu_pro target format).
     Returns "" if nothing found.
@@ -54,7 +59,33 @@ def extract_abcdj(text: str) -> str:
     if m:
         return m.group(1).upper()
 
-    # 2. Exact single capital letter on its own line (last match)
+    # 2. "correct answer is (X)" / "correct answer is:\nX"
+    m = re.search(r"correct answer is[:\s(]*\n*\s*\(?([A-J])\)?", text, re.IGNORECASE)
+    if m:
+        return m.group(1).upper()
+
+    # 3. "Answer: X" at start of line
+    m = re.search(r"(?:^|\n)\s*[Aa]nswer\s*:\s*\(?([A-J])\)?", text)
+    if m:
+        return m.group(1).upper()
+
+    # 4. "**X." or "**X)" (bold markdown option label)
+    m = re.search(r"\*\*([A-J])[.)]\s", text)
+    if m:
+        return m.group(1).upper()
+
+    # 5. Last "(X)" for A-J
+    matches = list(re.finditer(r"\(([A-J])\)", text))
+    if matches:
+        return matches[-1].group(1).upper()
+
+    # 6. "X. " at start of line (option-label style, last match)
+    for line in reversed(text.strip().splitlines()):
+        m = re.match(r"\s*([A-J])\.\s", line)
+        if m:
+            return m.group(1).upper()
+
+    # 7. Exact single capital letter on its own line (last match)
     for line in reversed(text.strip().splitlines()):
         m = re.search(r"^([A-J])$", line.strip())
         if m:

@@ -62,6 +62,9 @@ class MMLUProBenchmark(BaseBenchmark):
         )
         return prefix + f"{q}\nOptions:\n{opts}\nAnswer: Let's think step by step."
 
+    def extract_answer(self, prediction: str) -> str:
+        return extract_abcdj(prediction)
+
     def check_answer(self, prediction: str, example: Dict[str, Any]) -> bool:
         return extract_abcdj(prediction) == example["answer"]
 
