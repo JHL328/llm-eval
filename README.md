@@ -152,7 +152,7 @@ Shared logic in `BaseBenchmark`:
 | `bbh.py` | **BIG-Bench Hard** -- 3-shot CoT, pass@1. 23 subtasks, each with its own few-shot examples. Per-subtask accuracy reported in `per_category`. |
 | `gpqa.py` | **GPQA Diamond** -- 5-shot CoT, pass@k. Graduate-level science questions. |
 | `ifeval.py` | **IFEval** -- delegates to `lm-evaluation-harness` submodule. |
-| `answer_extractor.py` | `extract_mcq_choice()` for multiple-choice answer extraction (A/B/C/D/E). |
+| `answer_extractor.py` | MCQ answer extraction: `extract_abcd()` for MMLU (A–D), `extract_abcdj()` for MMLU-Pro (A–J, handles "the answer is X", "correct answer is X", "Answer: X", bold markdown, last parenthesised letter, option-label lines), `extract_bbh()` for BBH, `extract_gpqa()` for GPQA. |
 
 #### `benchmarks/code/`
 
@@ -220,7 +220,7 @@ my_task:
     n_sampling: 16
     max_tokens: 4096
     max_model_len: 8192
-    stop: ["</s>", "<|im_end|>", "\n\nQuestion:", "Human:"]
+    stop: ["</s>", "<|im_end|>", "<|endoftext|>", "<|end_of_text|>", "<eos>", "\n\nQuestion:", "Human:"]
   k_list: [1, 2, 4, 8, 16]
   num_shots: 4
   prompt_type: cot
@@ -237,14 +237,15 @@ Then implement a benchmark class inheriting `BaseBenchmark` and register it in `
 
 ### Stop tokens
 
-Stop tokens prevent base models from generating beyond the answer. Common patterns:
+Stop tokens prevent models from generating beyond the answer. Common patterns:
 
 | Token | Purpose |
 |---|---|
-| `"</s>"`, `"<\|im_end\|>"`, `"<\|endoftext\|>"` | Model-specific EOS tokens |
-| `"</think>"` | End of thinking (reasoning models) |
+| `"</s>"`, `"<\|im_end\|>"`, `"<\|endoftext\|>"`, `"<\|end_of_text\|>"`, `"<eos>"` | Model-specific EOS tokens |
 | `"\n\nQuestion:"` | Prevents generating next few-shot Q&A pair |
 | `"Human:"` | Prevents generating next conversational turn |
+
+> **Note**: `"</think>"` is intentionally **not** included as a stop token. Reasoning models (e.g. Qwen3) generate `<think>...</think>` blocks before outputting their final answer. Including `</think>` as a stop token truncates generation mid-thought, preventing the model from producing its answer.
 
 For SFT models, the tokenizer's EOS and pad tokens are automatically added.
 
